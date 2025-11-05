@@ -253,6 +253,18 @@ def main():
     # 表示しないオプション設定
     ydl_opts = {"quiet": True, "noprogress": True}
 
+    # ダウンロードファイルの最小化
+    # ydl_opts["format"] = "best.4"
+    ydl_opts = {
+            'format': 'bestaudio',
+            'postprocessors': [
+                {'key': 'FFmpegExtractAudio',
+                 'preferredcodec': 'mp3',
+                 'preferredquality': '192'},
+                {'key': 'FFmpegMetadata'},
+            ],
+        }
+
 
     # ログインが必要な場合の処理
     if select_option == "cookie":
@@ -273,14 +285,14 @@ def main():
                         ydl_opts["password"] = user_info[2].rstrip("\n\r")
 
     # 出力ファイルを連番にするため、rssから現在のitem数をカウントする
-    outtmpl = "podcast" + rss_checker(f'{setting_dict["podcast_path"]}podcast.rss') + ".%(ext)s"
+    outtmpl = "podcast" + rss_checker(f'{setting_dict["podcast_path"]}podcast2.rss') + ".%(ext)s"
     # 出力フォルダ
     down_dir = setting_dict["podcast_path"]
     # 出力ファイル名をオプション変数（辞書）に登録する
     ydl_opts["outtmpl"] = down_dir + outtmpl
 
     # 進捗確認のための将来対応
-    # ydl_opts["logger"] = MyLogger()
+    ydl_opts["logger"] = MyLogger()
 
     # 進捗確認のため
     # youtube_dlのオプション設定
@@ -299,7 +311,7 @@ def main():
     results = yt_download(url, ydl_opts, down_dir)
 
     # rssに新しいファイルを追加する
-    rss_modify(f'{setting_dict["podcast_path"]}podcast.rss', results)
+    rss_modify(f'{setting_dict["podcast_path"]}podcast2.rss', results)
 
     # jQueryの処理を確実に終わらせるため、5秒の待機を追加
     time.sleep(5)
